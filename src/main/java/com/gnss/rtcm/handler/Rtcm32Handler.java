@@ -32,8 +32,8 @@ public class Rtcm32Handler extends AbsHandler {
 		if(!rtcm3MsmHeader.isValiableRtcm3Msm()) {
 			return;
 		}
-//		log.info(rtcm3MsmHeader.getSatelliteSystem() + "..." + rtcm3MsmHeader.getSatelliteCount() + "..."
-//				+ rtcm3MsmHeader.getSignalCount() + "..." + rtcm3MsmHeader.getValiableCellCount());
+		
+		rtcm3MsmHeader.showFormat();
 
 		rtcm3Msm4SatelliteData = new Rtcm3Msm4SatelliteData();
 		rtcm3Msm4SatelliteData.parseRtcm3Msm4SatelliteData(rawBytes,rtcm3MsmHeader);
@@ -57,7 +57,8 @@ public class Rtcm32Handler extends AbsHandler {
 			satelliteData.setPrn(satellitePrnList.get(i));
 
 			for (int j = 0; j < signalCount; j++) {
-				boolean isValid = rtcm3MsmHeader.isValilableCell(valiableCellIndex);
+				int test = i * signalCount + j;
+				boolean isValid = rtcm3MsmHeader.isValilableCell(i * signalCount + j);
 				if (isValid) {
 					SignalData signalData = new SignalData();
 
@@ -83,11 +84,12 @@ public class Rtcm32Handler extends AbsHandler {
 					signalData.setSnr(cnr);
 
 					valiableCellIndex++;
-
+					
 					satelliteData.addSignalData(signalData);
 				}
 			}
 			gnssObservationData.addSatelliteData(satelliteData);
+			
 		}
 		
 		this.test();
@@ -102,7 +104,6 @@ public class Rtcm32Handler extends AbsHandler {
 			
 			for (SatelliteData satelliteData : satellites.values()) {
 				log.info("prn: " + satelliteData.getPrn() + "***" + satelliteData.getSignalDataMap().size());
-				log.info(Long.toBinaryString(rtcm3MsmHeader.getCellMask()));
 				for (SignalData signalData : satelliteData.getAllSignalData()) {
 					DecimalFormat df = new DecimalFormat("###############0.00");// 16位整数位，两小数位
 					log.info("***" +signalData.getFrequencyBand() + "***" + df.format(signalData.getPseudorange()) + "***"
