@@ -47,7 +47,8 @@ public class TcpClient {
 		sessionConfig.setReaderIdleTime(1000); // 需要自定义
 
 		try {
-			InetSocketAddress socketAddress = new InetSocketAddress("192.168.5.17", 9903);
+//			InetSocketAddress socketAddress = new InetSocketAddress("192.168.5.17", 9903);
+			InetSocketAddress socketAddress = new InetSocketAddress("192.168.142.1", 5017);
 			ConnectFuture connectFuture = connector.connect(socketAddress);
 			log.info(socketAddress.toString());
 			connectFuture.awaitUninterruptibly();
