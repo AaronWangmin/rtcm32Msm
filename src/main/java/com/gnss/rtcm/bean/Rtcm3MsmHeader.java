@@ -67,12 +67,19 @@ public class Rtcm3MsmHeader {
 		return maskValueList;
 	}
 	
+	// TODO...
 	public String[] getFrequencyBand() {
 		int signalCount = getSignalCount();
-		if(signalCount == 3) {
-			return new String[] {"L1","L2","L3"};
-		}else {
+		
+		if(signalCount == 2){
 			return new String[] {"L1","L2"};
+		}else if(signalCount == 3) {
+			return new String[] {"L1","L2","L3"};
+		}else if(signalCount == 4) {
+			return new String[] {"L1","L2","L3","L5"};
+		}else {
+			log.error("The count of availabe signal mask: " + signalCount + " is not correct");
+			return null;
 		}
 	}
 	
@@ -98,7 +105,21 @@ public class Rtcm3MsmHeader {
 	
 	public boolean isValilableCell(int index) {
 		int cellCount = getCellCount();
-		return ((cellMask >> (cellCount-1-index)) & 1) == 1;
+		return ((this.cellMask >> (cellCount-1-index)) & 1) == 1;
+	}
+	
+	public void showFormat() {
+		log.info("Rtcm3MsmHeader................................................");
+		log.info(this.getSatelliteSystem());
+		log.info("SatelliteMask: " + Long.toBinaryString(this.getSatelliteMask()) + ": " 
+				+ "SatelliteCount: " + this.getSatelliteCount() + ": "
+				+ "SatellitePrnList: " + this.getSatellitePrnList().toString());
+		log.info("SignalMask: " + Long.toBinaryString(this.getSignalMask()) + ": "
+				+ "SignalCount: " + this.getSignalCount() + ": "
+				+ "SignalMaskCode: " + this.getSignalCodeList().toString());
+		log.info("CellMask: " + Long.toBinaryString(this.getCellMask()) + ": "
+				+ "CellCount: " + this.getCellCount() + ": "
+				+ "ValiableCellCount: " + this.getValiableCellCount() + ": ");
 	}
 	
 	
@@ -109,7 +130,7 @@ public class Rtcm3MsmHeader {
 	public void parseRtcm3MsmHeader(byte[] rawBytes) {
 
 		int messageNumber = (int) BitUtil.bytesDecodeR(rawBytes, 3 * 8, 12);
-		log.info("messageNumber: "+ messageNumber);
+//		log.info("messageNumber: "+ messageNumber);
 		this.setMessageNumber(messageNumber);
 		if(!isValiableRtcm3Msm()) return;
 		
